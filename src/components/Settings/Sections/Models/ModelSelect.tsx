@@ -73,16 +73,18 @@ const ModelSelect = ({
           onChange={(event) => handleSave(event.target.value)}
           options={
             type === 'chat'
-              ? providers.flatMap((provider) =>
-                  provider.chatModels.map((model) => ({
+              ? providers.flatMap((provider, providerIndex) =>
+                  provider.chatModels.map((model, modelIndex) => ({
                     value: `${provider.id}/${model.key}`,
                     label: `${provider.name} - ${model.name}`,
+                    key: `${provider.id}-${model.key}-${providerIndex}-${modelIndex}`,
                   })),
                 )
-              : providers.flatMap((provider) =>
-                  provider.embeddingModels.map((model) => ({
+              : providers.flatMap((provider, providerIndex) =>
+                  provider.embeddingModels.map((model, modelIndex) => ({
                     value: `${provider.id}/${model.key}`,
                     label: `${provider.name} - ${model.name}`,
+                    key: `${provider.id}-${model.key}-${providerIndex}-${modelIndex}`,
                   })),
                 )
           }

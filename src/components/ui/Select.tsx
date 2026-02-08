@@ -3,7 +3,7 @@ import { Loader2, ChevronDown } from 'lucide-react';
 import { SelectHTMLAttributes, forwardRef } from 'react';
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  options: { value: any; label: string; disabled?: boolean }[];
+  options: { value: any; label: string; disabled?: boolean; key?: string }[];
   loading?: boolean;
 }
 
@@ -25,13 +25,19 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className,
           )}
         >
-          {options.map(({ label, value, disabled: optionDisabled }) => {
-            return (
-              <option key={value} value={value} disabled={optionDisabled}>
-                {label}
-              </option>
-            );
-          })}
+          {options.map(
+            ({ label, value, disabled: optionDisabled, key }, index) => {
+              return (
+                <option
+                  key={key || value || index}
+                  value={value}
+                  disabled={optionDisabled}
+                >
+                  {label}
+                </option>
+              );
+            },
+          )}
         </select>
         <span className="pointer-events-none absolute right-3 flex h-4 w-4 items-center justify-center text-black/50 dark:text-white/60">
           {loading ? (
