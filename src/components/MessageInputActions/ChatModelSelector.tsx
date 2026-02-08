@@ -137,9 +137,9 @@ const ModelSelector = () => {
                             </div>
 
                             <div className="flex flex-col px-2 py-2 space-y-0.5">
-                              {provider.chatModels.map((model) => (
+                              {provider.chatModels.map((model, modelIndex) => (
                                 <button
-                                  key={model.key}
+                                  key={`${provider.id}-${model.key}-${providerIndex}-${modelIndex}`}
                                   onClick={() =>
                                     handleModelSelect(provider.id, model.key)
                                   }
