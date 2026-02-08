@@ -6,6 +6,7 @@ import {
   ConfigModelProvider,
   StringUIConfigField,
   UIConfigField,
+  SelectUIConfigField,
 } from '@/lib/config/types';
 import { toast } from 'sonner';
 
@@ -133,32 +134,81 @@ const UpdateProvider = ({
                         />
                       </div>
 
-                      {fields.map((field: UIConfigField) => (
-                        <div
-                          key={field.key}
-                          className="flex flex-col items-start space-y-2"
-                        >
-                          <label className="text-xs text-black/70 dark:text-white/70">
-                            {field.name}
-                            {field.required && '*'}
-                          </label>
-                          <input
-                            value={config[field.key] ?? field.default ?? ''}
-                            onChange={(event) =>
-                              setConfig((prev) => ({
-                                ...prev,
-                                [field.key]: event.target.value,
-                              }))
-                            }
-                            className="w-full rounded-lg border border-light-200 dark:border-dark-200 bg-light-primary dark:bg-dark-primary px-4 py-3 pr-10 text-[13px] text-black/80 dark:text-white/80 placeholder:text-black/40 dark:placeholder:text-white/40 focus-visible:outline-none focus-visible:border-light-300 dark:focus-visible:border-dark-300 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                            placeholder={
-                              (field as StringUIConfigField).placeholder
-                            }
-                            type="text"
-                            required={field.required}
-                          />
-                        </div>
-                      ))}
+                      {fields.map((field: UIConfigField) => {
+                        // Skip baseURL field if mode is cloud
+                        if (
+                          field.key === 'baseURL' &&
+                          config['mode'] === 'cloud'
+                        ) {
+                          return null;
+                        }
+
+                        // Skip apiKey field if mode is local
+                        if (
+                          field.key === 'apiKey' &&
+                          config['mode'] === 'local'
+                        ) {
+                          return null;
+                        }
+
+                        return (
+                          <div
+                            key={field.key}
+                            className="flex flex-col items-start space-y-2"
+                          >
+                            <label className="text-xs text-black/70 dark:text-white/70">
+                              {field.name}
+                              {field.required && '*'}
+                            </label>
+                            {field.description && (
+                              <p className="text-[11px] text-black/50 dark:text-white/50 -mt-1">
+                                {field.description}
+                              </p>
+                            )}
+                            {field.type === 'select' ? (
+                              <Select
+                                value={config[field.key] ?? field.default ?? ''}
+                                onChange={(e) =>
+                                  setConfig((prev) => ({
+                                    ...prev,
+                                    [field.key]: e.target.value,
+                                  }))
+                                }
+                                options={field.options.map((opt) => ({
+                                  label: opt.name,
+                                  value: opt.value,
+                                }))}
+                              />
+                            ) : (
+                              <input
+                                value={config[field.key] ?? field.default ?? ''}
+                                onChange={(event) =>
+                                  setConfig((prev) => ({
+                                    ...prev,
+                                    [field.key]: event.target.value,
+                                  }))
+                                }
+                                className="w-full rounded-lg border border-light-200 dark:border-dark-200 bg-light-primary dark:bg-dark-primary px-4 py-3 pr-10 text-[13px] text-black/80 dark:text-white/80 placeholder:text-black/40 dark:placeholder:text-white/40 focus-visible:outline-none focus-visible:border-light-300 dark:focus-visible:border-dark-300 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                                placeholder={
+                                  (field as StringUIConfigField).placeholder
+                                }
+                                type="text"
+                                required={
+                                  field.required &&
+                                  !(
+                                    field.key === 'baseURL' &&
+                                    config['mode'] === 'cloud'
+                                  ) &&
+                                  !(
+                                    field.key === 'apiKey' &&
+                                    config['mode'] === 'local'
+                                  )
+                                }
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                   <div className="border-t border-light-200 dark:border-dark-200" />

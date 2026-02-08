@@ -17,6 +17,7 @@ type OllamaConfig = {
   baseURL: string;
   model: string;
   options?: GenerateOptions;
+  apiKey?: string;
 };
 
 const reasoningModels = [
@@ -34,9 +35,18 @@ class OllamaLLM extends BaseLLM<OllamaConfig> {
   constructor(protected config: OllamaConfig) {
     super(config);
 
-    this.ollamaClient = new Ollama({
+    const ollamaOptions: any = {
       host: this.config.baseURL || 'http://localhost:11434',
-    });
+    };
+
+    // Add Authorization header if API key is provided (for Ollama Cloud)
+    if (this.config.apiKey) {
+      ollamaOptions.headers = {
+        Authorization: `Bearer ${this.config.apiKey}`,
+      };
+    }
+
+    this.ollamaClient = new Ollama(ollamaOptions);
   }
 
   convertToOllamaMessages(messages: Message[]): OllamaMessage[] {

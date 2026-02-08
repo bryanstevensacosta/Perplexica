@@ -5,6 +5,7 @@ import { Chunk } from '@/lib/types';
 type OllamaConfig = {
   model: string;
   baseURL?: string;
+  apiKey?: string;
 };
 
 class OllamaEmbedding extends BaseEmbedding<OllamaConfig> {
@@ -13,9 +14,18 @@ class OllamaEmbedding extends BaseEmbedding<OllamaConfig> {
   constructor(protected config: OllamaConfig) {
     super(config);
 
-    this.ollamaClient = new Ollama({
+    const ollamaOptions: any = {
       host: this.config.baseURL || 'http://localhost:11434',
-    });
+    };
+
+    // Add Authorization header if API key is provided (for Ollama Cloud)
+    if (this.config.apiKey) {
+      ollamaOptions.headers = {
+        Authorization: `Bearer ${this.config.apiKey}`,
+      };
+    }
+
+    this.ollamaClient = new Ollama(ollamaOptions);
   }
 
   async embedText(texts: string[]): Promise<number[][]> {
