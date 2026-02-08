@@ -8,6 +8,7 @@ import {
   UIConfigField,
   SelectUIConfigField,
 } from '@/lib/config/types';
+import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
 
 const UpdateProvider = ({
